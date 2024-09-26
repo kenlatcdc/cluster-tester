@@ -1,0 +1,9 @@
+install locally on machine with only docker, no k8s needed
+
+main.go will need to be edited
+
+docker network create electronics-store
+
+docker run --name es-mysql --network electronics-store -e MYSQL_ROOT_PASSWORD=password123 -e MYSQL_USER=admin -e MYSQL_PASSWORD=password123 -e MYSQL_DATABASE=electronics-store -p 3306:3306 -d mysql
+
+docker run --name electronics-store --network electronics-store -p 8080:8080 -d electronics-store
