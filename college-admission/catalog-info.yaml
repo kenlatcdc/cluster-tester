@@ -1,0 +1,166 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: college-admission
+  description: College Admission API service
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/college-admission
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  providesApis:
+    - college-admission-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: college-admission-api
+  description: College Admission REST API
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/college-admission
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: College Admission API
+      version: 1.0.0
+      description: This is a college admission service API
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /health:
+        get:
+          summary: Health check
+          tags:
+            - health
+          responses:
+            '200':
+              description: Service is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      service:
+                        type: string
+                      version:
+                        type: string
+      /applications:
+        get:
+          summary: Get all applications
+          tags:
+            - applications
+          responses:
+            '200':
+              description: List of college applications
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+        post:
+          summary: Create a new application
+          tags:
+            - applications
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Application'
+          responses:
+            '201':
+              description: Application created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Application'
+      /applications/{id}:
+        get:
+          summary: Get application by ID
+          tags:
+            - applications
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Application details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Application'
+            '404':
+              description: Application not found
+        put:
+          summary: Update an application
+          tags:
+            - applications
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Application'
+          responses:
+            '200':
+              description: Application updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Application'
+            '404':
+              description: Application not found
+        delete:
+          summary: Delete an application
+          tags:
+            - applications
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Application deleted
+            '404':
+              description: Application not found
+    components:
+      schemas:
+        Application:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            first_name:
+              type: string
+              example: "John"
+            last_name:
+              type: string
+              example: "Doe"
+            age:
+              type: integer
+              example: 18
+            course:
+              type: string
+              example: "Computer Science"

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: cluster-tester-apis
+  description: All APIs in the cluster-tester project
+spec:
+  type: file
+  targets:
+    - ./coffee-shop/catalog-info.yaml
+    - ./pet-store/catalog-info.yaml
+    - ./restaurant/catalog-info.yaml
+    - ./college-admission/catalog-info.yaml
+    - ./electronics-store/catalog-info.yaml
+    - ./electronics-store-tracing/catalog-info.yaml

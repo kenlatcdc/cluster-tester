@@ -1,0 +1,161 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: coffee-shop
+  description: Coffee Shop API service
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/coffee-shop
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  providesApis:
+    - coffee-shop-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: coffee-shop-api
+  description: Coffee Shop REST API
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/coffee-shop
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Coffee Shop API
+      version: 1.0.0
+      description: This is a coffee shop service API
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /health:
+        get:
+          summary: Health check
+          tags:
+            - health
+          responses:
+            '200':
+              description: Service is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      service:
+                        type: string
+                      version:
+                        type: string
+      /coffees:
+        get:
+          summary: Get all coffees
+          tags:
+            - coffees
+          responses:
+            '200':
+              description: List of coffees
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Coffee'
+        post:
+          summary: Create a new coffee
+          tags:
+            - coffees
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Coffee'
+          responses:
+            '201':
+              description: Coffee created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Coffee'
+      /coffees/{id}:
+        get:
+          summary: Get coffee by ID
+          tags:
+            - coffees
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Coffee details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Coffee'
+            '404':
+              description: Coffee not found
+        put:
+          summary: Update a coffee
+          tags:
+            - coffees
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Coffee'
+          responses:
+            '200':
+              description: Coffee updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Coffee'
+            '404':
+              description: Coffee not found
+        delete:
+          summary: Delete a coffee
+          tags:
+            - coffees
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Coffee deleted
+            '404':
+              description: Coffee not found
+    components:
+      schemas:
+        Coffee:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Espresso"
+            price:
+              type: number
+              format: float
+              example: 2.99

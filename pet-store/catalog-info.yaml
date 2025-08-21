@@ -1,0 +1,163 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: pet-store
+  description: Pet Store API service
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/pet-store
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  providesApis:
+    - pet-store-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: pet-store-api
+  description: Pet Store REST API
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/pet-store
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Pet Store API
+      version: 1.0.0
+      description: This is a pet store service API
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /health:
+        get:
+          summary: Health check
+          tags:
+            - health
+          responses:
+            '200':
+              description: Service is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      service:
+                        type: string
+                      version:
+                        type: string
+      /pets:
+        get:
+          summary: Get all pets
+          tags:
+            - pets
+          responses:
+            '200':
+              description: List of pets
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pet'
+        post:
+          summary: Create a new pet
+          tags:
+            - pets
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Pet'
+          responses:
+            '201':
+              description: Pet created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Pet'
+      /pets/{id}:
+        get:
+          summary: Get pet by ID
+          tags:
+            - pets
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Pet details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Pet'
+            '404':
+              description: Pet not found
+        put:
+          summary: Update a pet
+          tags:
+            - pets
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Pet'
+          responses:
+            '200':
+              description: Pet updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Pet'
+            '404':
+              description: Pet not found
+        delete:
+          summary: Delete a pet
+          tags:
+            - pets
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Pet deleted
+            '404':
+              description: Pet not found
+    components:
+      schemas:
+        Pet:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Max"
+            type:
+              type: string
+              example: "Dog"
+            age:
+              type: integer
+              example: 3

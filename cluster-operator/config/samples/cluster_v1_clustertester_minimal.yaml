@@ -1,0 +1,32 @@
+apiVersion: cluster.cdcent.io/v1
+kind: ClusterTester
+metadata:
+  name: clustertester-minimal
+  namespace: default
+spec:
+  # Enable only essential services
+  coffeeShop:
+    enabled: true
+    
+  petStore:
+    enabled: true
+    
+  restaurant:
+    enabled: false
+    
+  collegeAdmission:
+    enabled: false
+    
+  electronicsStore:
+    enabled: false
+    
+  electronicsStoreTracing:
+    enabled: false
+
+  # No database needed for basic services
+  database:
+    enabled: false
+
+  # Global settings
+  global:
+    serviceType: NodePort

@@ -1,0 +1,118 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: electronics-store
+  description: Electronics Store API service
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/electronics-store
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:mysql-electronics-store
+  providesApis:
+    - electronics-store-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: electronics-store-api
+  description: Electronics Store REST API
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/electronics-store
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Electronics Store API
+      version: 1.0.0
+      description: This is an electronics store service API
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /health:
+        get:
+          summary: Health check
+          tags:
+            - health
+          responses:
+            '200':
+              description: Service is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      service:
+                        type: string
+                      version:
+                        type: string
+      /products:
+        get:
+          summary: Get all products
+          tags:
+            - products
+          responses:
+            '200':
+              description: List of products
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+            '500':
+              description: Internal server error
+      /products/{id}:
+        get:
+          summary: Get product by ID
+          tags:
+            - products
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Product details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Product'
+            '404':
+              description: Product not found
+    components:
+      schemas:
+        Product:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Laptop"
+            price:
+              type: number
+              format: float
+              example: 999.99
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: mysql-electronics-store
+  description: MySQL database for electronics store
+spec:
+  type: database
+  owner: platform-team
+  lifecycle: production

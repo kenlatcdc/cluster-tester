@@ -1,0 +1,100 @@
+apiVersion: cluster.cdcent.io/v1
+kind: ClusterTester
+metadata:
+  name: clustertester-sample
+  namespace: default
+spec:
+  # Enable all services
+  coffeeShop:
+    enabled: true
+    replicas: 2
+    image: coffee-shop
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  petStore:
+    enabled: true
+    replicas: 1
+    image: pet-store
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  restaurant:
+    enabled: true
+    replicas: 1
+    image: restaurant
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  collegeAdmission:
+    enabled: true
+    replicas: 1
+    image: college-admission
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  electronicsStore:
+    enabled: true
+    replicas: 1
+    image: electronics-store
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  electronicsStoreTracing:
+    enabled: true
+    replicas: 1
+    image: electronics-store-tracing
+    tag: latest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  # Database configuration
+  database:
+    enabled: true
+    type: mysql
+    image: mysql
+    tag: "8.0"
+    storageSize: "20Gi"
+    storageClass: "standard"
+
+  # Global settings
+  global:
+    namespace: cluster-tester
+    imagePullPolicy: IfNotPresent
+    serviceType: ClusterIP
+    ingressEnabled: false

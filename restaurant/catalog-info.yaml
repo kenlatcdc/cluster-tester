@@ -1,0 +1,161 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: restaurant
+  description: Restaurant API service
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/restaurant
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  providesApis:
+    - restaurant-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: restaurant-api
+  description: Restaurant REST API
+  annotations:
+    backstage.io/source-location: url:https://github.com/cdcent/cluster-tester/tree/main/restaurant
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Restaurant API
+      version: 1.0.0
+      description: This is a restaurant service API
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /health:
+        get:
+          summary: Health check
+          tags:
+            - health
+          responses:
+            '200':
+              description: Service is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      service:
+                        type: string
+                      version:
+                        type: string
+      /menu:
+        get:
+          summary: Get all menu items
+          tags:
+            - menu
+          responses:
+            '200':
+              description: List of menu items
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MenuItem'
+        post:
+          summary: Create a new menu item
+          tags:
+            - menu
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MenuItem'
+          responses:
+            '201':
+              description: Menu item created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/MenuItem'
+      /menu/{id}:
+        get:
+          summary: Get menu item by ID
+          tags:
+            - menu
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Menu item details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/MenuItem'
+            '404':
+              description: Menu item not found
+        put:
+          summary: Update a menu item
+          tags:
+            - menu
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MenuItem'
+          responses:
+            '200':
+              description: Menu item updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/MenuItem'
+            '404':
+              description: Menu item not found
+        delete:
+          summary: Delete a menu item
+          tags:
+            - menu
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Menu item deleted
+            '404':
+              description: Menu item not found
+    components:
+      schemas:
+        MenuItem:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Pizza"
+            price:
+              type: number
+              format: float
+              example: 12.99
